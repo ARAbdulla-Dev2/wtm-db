@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>වැඩ ලේඛන පද්ධතිය</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans Sinhala', sans-serif;
+            background-color: #f3f4f6;
+        }
+        
+        .card {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .main-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .main-btn:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            transform: translateY(-2px);
+        }
+        
+        .history-item {
+            transition: all 0.2s ease;
+        }
+        
+        .history-item:hover {
+            background-color: #f8fafc;
+        }
+        
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+        
+        .tab-button.active {
+            border-bottom: 3px solid #3b82f6;
+            color: #3b82f6;
+        }
+        
+        .smooth-transition {
+            transition: all 0.3s ease-in-out;
+        }
+        
+        .edit-form {
+            display: none;
+            background-color: #f8fafc;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 0.5rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-12">
+            <h1 class="text-3xl md:text-4xl font-bold text-blue-800 mb-2">වැඩ ලේඛන පද්ධතිය</h1>
+            <p class="text-lg text-gray-600">ඔබගේ දෛනික වැඩ සටහන් ගබඩා කර සුරකින්න</p>
+        </header>
+
+        <div class="flex justify-center mb-8">
+            <button id="entry-tab" class="tab-button active text-lg font-medium px-6 py-2 rounded-t-lg">නව ඇතුළත් කිරීම</button>
+            <button id="history-tab" class="tab-button text-lg font-medium px-6 py-2 rounded-t-lg">ඉතිහාසය</button>
+        </div>
+
+        <!-- Entry Form Section -->
+        <div id="entry-section" class="smooth-transition">
+            <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-md overflow-hidden card">
+                <div class="p-6">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">වැඩ විස්තර ඇතුළත් කරන්න</h2>
+                    
+                    <form id="work-form" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Date -->
+                            <div>
+                                <label for="date" class="block text-sm font-medium text-gray-700 mb-1">දිනය</label>
+                                <div class="relative">
+                                    <input type="date" id="date" name="date" required
+                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                            </div>
+                            
+                            <!-- Work Location -->
+                            <div>
+                                <label for="location" class="block text-sm font-medium text-gray-700 mb-1">වැඩ කරපු ස්ථානය</label>
+                                <input type="text" id="location" name="location" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder="ස්ථානය 👤💬">
+                            </div>
+                            
+                            <!-- Start Time -->
+                            <div>
+                                <label for="start-time" class="block text-sm font-medium text-gray-700 mb-1">වැඩ පටන් ගත්ත වෙලාව</label>
+                                <input type="time" id="start-time" name="start-time" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            
+                            <!-- End Time -->
+                            <div>
+                                <label for="end-time" class="block text-sm font-medium text-gray-700 mb-1">වැඩ අවසන් වූ වෙලාව</label>
+                                <input type="time" id="end-time" name="end-time" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            
+                            <!-- OT Hours -->
+                            <div>
+                                <label for="ot-hours" class="block text-sm font-medium text-gray-700 mb-1">OT පැය</label>
+                                <input type="number" id="ot-hours" name="ot-hours" min="0" step="0.5"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder="O.T HOUR 👤💬">
+                            </div>
+                            
+                            <!-- Work Description -->
+                            <div class="md:col-span-2">
+                                <label for="description" class="block text-sm font-medium text-gray-700 mb-1">වැඩ විස්තර</label>
+                                <textarea id="description" name="description" rows="3"
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                                    placeholder="ඔබ කළ වැඩ සහ ඕනෑම විශේෂ සටහන්" required></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-center pt-4">
+                            <button type="submit" class="main-btn text-white px-8 py-3 rounded-lg font-medium flex items-center">
+                                <i class="fas fa-save mr-2"></i> Save ✅
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Section -->
+        <div id="history-section" class="smooth-transition hidden max-w-6xl mx-auto">
+            <div class="bg-white rounded-xl shadow-md overflow-hidden card">
+                <div class="p-6">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">ඔබගේ වැඩ ඉතිහාසය</h2>
+                    
+                    <div class="flex justify-end mb-4">
+                        <button id="clear-history" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+                            සියලු ඉතිහාසය මැකිය යුතුයි
+                        </button>
+                    </div>
+                    
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="relative w-64">
+                            <input type="text" id="search-history" placeholder="සොයන්න..." 
+                                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            <div class="absolute left-3 top-2.5 text-gray-400">
+                                <i class="fas fa-search"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="flex space-x-2">
+                            <button id="sort-date" class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 text-sm">
+                                <i class="fas fa-sort-amount-down mr-1"></i> දිනය
+                            </button>
+                            <button id="sort-location" class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 text-sm">
+                                <i class="fas fa-map-marker-alt mr-1"></i> ස්ථානය
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="history-list" class="divide-y divide-gray-200">
+                        <!-- History items will be dynamically added here -->
+                    </div>
+                    
+                    <div id="no-records" class="text-center py-10 hidden">
+                        <i class="fas fa-clipboard-list text-5xl text-gray-300 mb-4"></i>
+                        <p class="text-gray-500 text-lg">කිසිදු වාර්තාවක් නැත</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Document ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // API base URL
+            const API_BASE_URL = '/api/data';
+            
+            // Tab switching
+            const entryTab = document.getElementById('entry-tab');
+            const historyTab = document.getElementById('history-tab');
+            const entrySection = document.getElementById('entry-section');
+            const historySection = document.getElementById('history-section');
+            
+            entryTab.addEventListener('click', function() {
+                entryTab.classList.add('active');
+                historyTab.classList.remove('active');
+                entrySection.classList.remove('hidden');
+                historySection.classList.add('hidden');
+            });
+            
+            historyTab.addEventListener('click', function() {
+                historyTab.classList.add('active');
+                entryTab.classList.remove('active');
+                historySection.classList.remove('hidden');
+                entrySection.classList.add('hidden');
+                loadHistory();
+            });
+            
+            // Form submission
+            const workForm = document.getElementById('work-form');
+            workForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Get form values
+                const date = document.getElementById('date').value;
+                const location = document.getElementById('location').value;
+                const startTime = document.getElementById('start-time').value;
+                const endTime = document.getElementById('end-time').value;
+                const otHours = parseFloat(document.getElementById('ot-hours').value) || 0;
+                const description = document.getElementById('description').value;
+                
+                // Create work entry object
+                const workEntry = {
+                    date,
+                    location,
+                    startTime,
+                    endTime,
+                    otHours,
+                    description
+                };
+                
+                try {
+                    // Send POST request to server
+                    const response = await fetch(API_BASE_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(workEntry)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    
+                    // Reset form
+                    workForm.reset();
+                    
+                    // Show success message
+                    alert('වැඩ විස්තර සාර්ථකව සුරකින ලදී!');
+                    
+                    // Switch to history tab
+                    historyTab.click();
+                } catch (error) {
+                    console.error('Error saving work entry:', error);
+                    alert('දෝෂයක් ඇතිවිය: ' + error.message);
+                }
+            });
+            
+            // Load history function
+            async function loadHistory() {
+                try {
+                    const response = await fetch(API_BASE_URL);
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    const history = await response.json();
+                    
+                    const historyList = document.getElementById('history-list');
+                    const noRecords = document.getElementById('no-records');
+                    
+                    // Clear existing items
+                    historyList.innerHTML = '';
+                    
+                    if (history.length === 0) {
+                        noRecords.classList.remove('hidden');
+                        return;
+                    } else {
+                        noRecords.classList.add('hidden');
+                    }
+                    
+                    // Format date in Sinhala style
+                    function formatDate(dateStr) {
+                        const date = new Date(dateStr);
+                        return date.toLocaleDateString('si-LK', { 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric',
+                            weekday: 'long'
+                        });
+                    }
+                    
+                    // Format time in Sinhala style
+                    function formatTime(timeStr) {
+                        if (!timeStr) return '';
+                        const [hours, minutes] = timeStr.split(':');
+                        return `${hours}:${minutes}`;
+                    }
+                    
+                    // Calculate regular hours
+                    function calculateRegularHours(start, end) {
+                        if (!start || !end) return 0;
+                        
+                        const [startH, startM] = start.split(':').map(Number);
+                        const [endH, endM] = end.split(':').map(Number);
+                        
+                        let hours = endH - startH;
+                        let minutes = endM - startM;
+                        
+                        if (minutes < 0) {
+                            hours--;
+                            minutes += 60;
+                        }
+                        
+                        return hours + (minutes / 60);
+                    }
+                    
+                    // Add items to history list
+                    history.forEach(entry => {
+                        const regHours = calculateRegularHours(entry.startTime, entry.endTime);
+                        const totalHours = regHours + entry.otHours;
+                        
+                        const historyItem = document.createElement('div');
+                        historyItem.className = 'history-item py-4 px-4 hover:bg-gray-50 cursor-pointer';
+                        historyItem.dataset.id = entry.id;
+                        
+                        historyItem.innerHTML = `
+                            <div class="flex justify-between items-center mb-2">
+                                <h3 class="text-lg font-medium text-gray-800">
+                                    ${formatDate(entry.date)}
+                                </h3>
+                                <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">
+                                    ${entry.location}
+                                </span>
+                                <div class="flex space-x-2">
+                                    <button class="edit-btn text-blue-500 hover:text-blue-700">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="delete-btn text-red-500 hover:text-red-700">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="flex flex-col md:flex-row md:justify-between">
+                                <div class="mb-2">
+                                    <span class="text-gray-600 mr-2"><i class="far fa-clock mr-1"></i>පටන් ගත්තේ:</span>
+                                    <span class="font-medium">${formatTime(entry.startTime)}</span>
+                                </div>
+                                <div class="mb-2">
+                                    <span class="text-gray-600 mr-2"><i class="fas fa-clock mr-1"></i>අවසන් කලේ:</span>
+                                    <span class="font-medium">${formatTime(entry.endTime)}</span>
+                                </div>
+                                <div class="mb-2 md:mb-0">
+                                    <span class="text-gray-600 mr-2"><i class="fas fa-business-time mr-1"></i>OT පැය:</span>
+                                    <span class="font-medium">${entry.otHours}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="mb-2">
+                                <span class="text-gray-600 mr-2"><i class="fas fa-stopwatch mr-1"></i>මුළු පැය:</span>
+                                <span class="font-medium">${totalHours.toFixed(1)}</span>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <p class="text-gray-700">
+                                    <i class="fas fa-file-alt mr-1"></i> ${entry.description}
+                                </p>
+                            </div>
+                            
+                            <div class="edit-form mt-4" id="edit-form-${entry.id}">
+                                <form class="edit-work-form grid grid-cols-1 md:grid-cols-2 gap-4" data-id="${entry.id}">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">දිනය</label>
+                                        <input type="date" class="edit-date w-full px-3 py-2 border rounded" value="${entry.date}" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">ස්ථානය</label>
+                                        <input type="text" class="edit-location w-full px-3 py-2 border rounded" value="${entry.location}" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">පටන් ගත්තේ</label>
+                                        <input type="time" class="edit-start-time w-full px-3 py-2 border rounded" value="${entry.startTime}" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">අවසන් කලේ</label>
+                                        <input type="time" class="edit-end-time w-full px-3 py-2 border rounded" value="${entry.endTime}" required>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">OT පැය</label>
+                                        <input type="number" class="edit-ot-hours w-full px-3 py-2 border rounded" value="${entry.otHours}" min="0" step="0.5">
+                                    </div>
+                                    <div class="md:col-span-2">
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">විස්තර</label>
+                                        <textarea class="edit-description w-full px-3 py-2 border rounded" rows="2" required>${entry.description}</textarea>
+                                    </div>
+                                    <div class="md:col-span-2 flex justify-end space-x-2">
+                                        <button type="button" class="cancel-edit px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">අවලංගු කරන්න</button>
+                                        <button type="submit" class="save-edit px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">සුරකින්න</button>
+                                    </div>
+                                </form>
+                            </div>
+                        `;
+                        
+                        historyList.appendChild(historyItem);
+                        
+                        // Add event listener for delete button
+                        historyItem.querySelector('.delete-btn').addEventListener('click', async function(e) {
+                            e.stopPropagation();
+                            if (confirm('ඔබට මෙම ඇතුළත් කිරීම මකා දැමීමට අවශ්‍යද?')) {
+                                try {
+                                    const response = await fetch(`${API_BASE_URL}/${entry.id}`, {
+                                        method: 'DELETE'
+                                    });
+                                    
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    
+                                    loadHistory(); // Reload the history
+                                    alert('ඇතුළත් කිරීම සාර්ථකව මකා දමන ලදී!');
+                                } catch (error) {
+                                    console.error('Error deleting entry:', error);
+                                    alert('දෝෂයක් ඇතිවිය: ' + error.message);
+                                }
+                            }
+                        });
+                        
+                        // Add event listener for edit button
+                        historyItem.querySelector('.edit-btn').addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            const editForm = historyItem.querySelector('.edit-form');
+                            editForm.style.display = editForm.style.display === 'block' ? 'none' : 'block';
+                        });
+                        
+                        // Add event listener for cancel edit button
+                        const cancelBtn = historyItem.querySelector('.cancel-edit');
+                        if (cancelBtn) {
+                            cancelBtn.addEventListener('click', function(e) {
+                                e.stopPropagation();
+                                const editForm = historyItem.querySelector('.edit-form');
+                                editForm.style.display = 'none';
+                            });
+                        }
+                        
+                        // Add event listener for edit form submission
+                        const editForm = historyItem.querySelector('.edit-work-form');
+                        if (editForm) {
+                            editForm.addEventListener('submit', async function(e) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                
+                                const updatedEntry = {
+                                    date: this.querySelector('.edit-date').value,
+                                    location: this.querySelector('.edit-location').value,
+                                    startTime: this.querySelector('.edit-start-time').value,
+                                    endTime: this.querySelector('.edit-end-time').value,
+                                    otHours: parseFloat(this.querySelector('.edit-ot-hours').value) || 0,
+                                    description: this.querySelector('.edit-description').value
+                                };
+                                
+                                try {
+                                    const response = await fetch(`${API_BASE_URL}/${entry.id}`, {
+                                        method: 'PUT',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify(updatedEntry)
+                                    });
+                                    
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    
+                                    // Hide the edit form
+                                    this.closest('.edit-form').style.display = 'none';
+                                    
+                                    // Reload the history to show updated data
+                                    loadHistory();
+                                    
+                                    alert('ඇතුළත් කිරීම සාර්ථකව යාවත්කාලීන කරන ලදී!');
+                                } catch (error) {
+                                    console.error('Error updating entry:', error);
+                                    alert('දෝෂයක් ඇතිවිය: ' + error.message);
+                                }
+                            });
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error loading history:', error);
+                    alert('දෝෂයක් ඇතිවිය: ' + error.message);
+                }
+            }
+            
+            // Clear history functionality
+            document.getElementById('clear-history').addEventListener('click', async function() {
+                if (confirm('ඔබට සියලු ඉතිහාසය මැකිය යුතුද?')) {
+                    try {
+                        // First get all items to delete them one by one
+                        const response = await fetch(API_BASE_URL);
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        const history = await response.json();
+                        
+                        // Delete all items
+                        for (const item of history) {
+                            await fetch(`${API_BASE_URL}/${item.id}`, {
+                                method: 'DELETE'
+                            });
+                        }
+                        
+                        // Reload the history to reflect changes
+                        loadHistory();
+                        alert('සියලු ඉතිහාසය මැකී ඇත!');
+                    } catch (error) {
+                        console.error('Error clearing history:', error);
+                        alert('දෝෂයක් ඇතිවිය: ' + error.message);
+                    }
+                }
+            });
+            
+            // Search functionality
+            const searchInput = document.getElementById('search-history');
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const historyItems = document.querySelectorAll('.history-item');
+                
+                historyItems.forEach(item => {
+                    const text = item.textContent.toLowerCase();
+                    if (text.includes(searchTerm)) {
+                        item.classList.remove('hidden');
+                    } else {
+                        item.classList.add('hidden');
+                    }
+                });
+            });
+            
+            // Sort functionality
+            document.getElementById('sort-date').addEventListener('click', async function() {
+                try {
+                    const response = await fetch(API_BASE_URL);
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    let history = await response.json();
+                    
+                    // Sort by date (newest first)
+                    history.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    
+                    // Re-render the sorted history
+                    renderHistory(history);
+                } catch (error) {
+                    console.error('Error sorting by date:', error);
+                }
+            });
+            
+            document.getElementById('sort-location').addEventListener('click', async function() {
+                try {
+                    const response = await fetch(API_BASE_URL);
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    let history = await response.json();
+                    
+                    // Sort by location
+                    history.sort((a, b) => a.location.localeCompare(b.location));
+                    
+                    // Re-render the sorted history
+                    renderHistory(history);
+                } catch (error) {
+                    console.error('Error sorting by location:', error);
+                }
+            });
+            
+            // Helper function to render history (used for sorting)
+            function renderHistory(history) {
+                const historyList = document.getElementById('history-list');
+                const noRecords = document.getElementById('no-records');
+                
+                // Clear existing items
+                historyList.innerHTML = '';
+                
+                if (history.length === 0) {
+                    noRecords.classList.remove('hidden');
+                    return;
+                } else {
+                    noRecords.classList.add('hidden');
+                }
+                
+                // Format date in Sinhala style
+                function formatDate(dateStr) {
+                    const date = new Date(dateStr);
+                    return date.toLocaleDateString('si-LK', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric',
+                        weekday: 'long'
+                    });
+                }
+                
+                // Format time in Sinhala style
+                function formatTime(timeStr) {
+                    if (!timeStr) return '';
+                    const [hours, minutes] = timeStr.split(':');
+                    return `${hours}:${minutes}`;
+                }
+                
+                // Calculate regular hours
+                function calculateRegularHours(start, end) {
+                    if (!start || !end) return 0;
+                    
+                    const [startH, startM] = start.split(':').map(Number);
+                    const [endH, endM] = end.split(':').map(Number);
+                    
+                    let hours = endH - startH;
+                    let minutes = endM - startM;
+                    
+                    if (minutes < 0) {
+                        hours--;
+                        minutes += 60;
+                    }
+                    
+                    return hours + (minutes / 60);
+                }
+                
+                // Add items to history list
+                history.forEach(entry => {
+                    const regHours = calculateRegularHours(entry.startTime, entry.endTime);
+                    const totalHours = regHours + entry.otHours;
+                    
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'history-item py-4 px-4 hover:bg-gray-50 cursor-pointer';
+                    historyItem.dataset.id = entry.id;
+                    
+                    historyItem.innerHTML = `
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="text-lg font-medium text-gray-800">
+                                ${formatDate(entry.date)}
+                            </h3>
+                            <span class="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">
+                                ${entry.location}
+                            </span>
+                            <div class="flex space-x-2">
+                                <button class="edit-btn text-blue-500 hover:text-blue-700">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="delete-btn text-red-500 hover:text-red-700">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col md:flex-row md:justify-between">
+                            <div class="mb-2">
+                                <span class="text-gray-600 mr-2"><i class="far fa-clock mr-1"></i>පටන් ගත්තේ:</span>
+                                <span class="font-medium">${formatTime(entry.startTime)}</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="text-gray-600 mr-2"><i class="fas fa-clock mr-1"></i>අවසන් කලේ:</span>
+                                <span class="font-medium">${formatTime(entry.endTime)}</span>
+                            </div>
+                            <div class="mb-2 md:mb-0">
+                                <span class="text-gray-600 mr-2"><i class="fas fa-business-time mr-1"></i>OT පැය:</span>
+                                <span class="font-medium">${entry.otHours}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-2">
+                            <span class="text-gray-600 mr-2"><i class="fas fa-stopwatch mr-1"></i>මුළු පැය:</span>
+                            <span class="font-medium">${totalHours.toFixed(1)}</span>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <p class="text-gray-700">
+                                <i class="fas fa-file-alt mr-1"></i> ${entry.description}
+                            </p>
+                        </div>
+                        
+                        <div class="edit-form mt-4" id="edit-form-${entry.id}">
+                            <form class="edit-work-form grid grid-cols-1 md:grid-cols-2 gap-4" data-id="${entry.id}">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">දිනය</label>
+                                    <input type="date" class="edit-date w-full px-3 py-2 border rounded" value="${entry.date}" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">ස්ථානය</label>
+                                    <input type="text" class="edit-location w-full px-3 py-2 border rounded" value="${entry.location}" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">පටන් ගත්තේ</label>
+                                    <input type="time" class="edit-start-time w-full px-3 py-2 border rounded" value="${entry.startTime}" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">අවසන් කලේ</label>
+                                    <input type="time" class="edit-end-time w-full px-3 py-2 border rounded" value="${entry.endTime}" required>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">OT පැය</label>
+                                    <input type="number" class="edit-ot-hours w-full px-3 py-2 border rounded" value="${entry.otHours}" min="0" step="0.5">
+                                </div>
+                                <div class="md:col-span-2">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">විස්තර</label>
+                                    <textarea class="edit-description w-full px-3 py-2 border rounded" rows="2" required>${entry.description}</textarea>
+                                </div>
+                                <div class="md:col-span-2 flex justify-end space-x-2">
+                                    <button type="button" class="cancel-edit px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">අවලංගු කරන්න</button>
+                                    <button type="submit" class="save-edit px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">සුරකින්න</button>
+                                </div>
+                            </form>
+                        </div>
+                    `;
+                    
+                    historyList.appendChild(historyItem);
+                    
+                    // Add event listeners for the newly created elements
+                    historyItem.querySelector('.delete-btn').addEventListener('click', async function(e) {
+                        e.stopPropagation();
+                        if (confirm('ඔබට මෙම ඇතුළත් කිරීම මකා දැමීමට අවශ්‍යද?')) {
+                            try {
+                                const response = await fetch(`${API_BASE_URL}/${entry.id}`, {
+                                    method: 'DELETE'
+                                });
+                                
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                
+                                loadHistory(); // Reload the history
+                                alert('ඇතුළත් කිරීම සාර්ථකව මකා දමන ලදී!');
+                            } catch (error) {
+                                console.error('Error deleting entry:', error);
+                                alert('දෝෂයක් ඇතිවිය: ' + error.message);
+                            }
+                        }
+                    });
+                    
+                    historyItem.querySelector('.edit-btn').addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const editForm = historyItem.querySelector('.edit-form');
+                        editForm.style.display = editForm.style.display === 'block' ? 'none' : 'block';
+                    });
+                    
+                    const cancelBtn = historyItem.querySelector('.cancel-edit');
+                    if (cancelBtn) {
+                        cancelBtn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            const editForm = historyItem.querySelector('.edit-form');
+                            editForm.style.display = 'none';
+                        });
+                    }
+                    
+                    const editForm = historyItem.querySelector('.edit-work-form');
+                    if (editForm) {
+                        editForm.addEventListener('submit', async function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            
+                            const updatedEntry = {
+                                date: this.querySelector('.edit-date').value,
+                                location: this.querySelector('.edit-location').value,
+                                startTime: this.querySelector('.edit-start-time').value,
+                                endTime: this.querySelector('.edit-end-time').value,
+                                otHours: parseFloat(this.querySelector('.edit-ot-hours').value) || 0,
+                                description: this.querySelector('.edit-description').value
+                            };
+                            
+                            try {
+                                const response = await fetch(`${API_BASE_URL}/${entry.id}`, {
+                                    method: 'PUT',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify(updatedEntry)
+                                });
+                                
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                
+                                // Hide the edit form
+                                this.closest('.edit-form').style.display = 'none';
+                                
+                                // Reload the history to show updated data
+                                loadHistory();
+                                
+                                alert('ඇතුළත් කිරීම සාර්ථකව යාවත්කාලීන කරන ලදී!');
+                            } catch (error) {
+                                console.error('Error updating entry:', error);
+                                alert('දෝෂයක් ඇතිවිය: ' + error.message);
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
