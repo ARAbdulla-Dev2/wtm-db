@@ -62,9 +62,47 @@
             margin-top: 1rem;
             border-radius: 0.5rem;
         }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 400px;
+            border-radius: 8px;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
+    <!-- API Key Modal -->
+    <div id="apiKeyModal" class="modal">
+        <div class="modal-content">
+            <div class="mb-4">
+                <h3 class="text-lg font-medium text-gray-800 mb-2">API Key Required</h3>
+                <p class="text-gray-600">Please enter your API key to perform this action</p>
+            </div>
+            <div class="mb-4">
+                <input type="password" id="apiKeyInput" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="Enter API Key">
+            </div>
+            <div class="flex justify-end space-x-2">
+                <button id="cancelApiKey" class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400">Cancel</button>
+                <button id="submitApiKey" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Submit</button>
+            </div>
+        </div>
+    </div>
+
     <div class="container mx-auto px-4 py-8">
         <header class="text-center mb-12">
             <h1 class="text-3xl md:text-4xl font-bold text-blue-800 mb-2">වැඩ ලේඛන පද්ධතිය</h1>
@@ -191,6 +229,50 @@
         document.addEventListener('DOMContentLoaded', function() {
             // API base URL
             const API_BASE_URL = '/api/data';
+            let currentApiKey = '';
+            let pendingAction = null;
+            
+            // Modal elements
+            const modal = document.getElementById('apiKeyModal');
+            const apiKeyInput = document.getElementById('apiKeyInput');
+            const submitApiKey = document.getElementById('submitApiKey');
+            const cancelApiKey = document.getElementById('cancelApiKey');
+            
+            // Show modal function
+            function showApiKeyModal(actionCallback) {
+                pendingAction = actionCallback;
+                modal.style.display = 'block';
+                apiKeyInput.focus();
+            }
+            
+            // Hide modal function
+            function hideApiKeyModal() {
+                modal.style.display = 'none';
+                apiKeyInput.value = '';
+                pendingAction = null;
+            }
+            
+            // Modal event listeners
+            submitApiKey.addEventListener('click', function() {
+                currentApiKey = apiKeyInput.value.trim();
+                if (currentApiKey) {
+                    if (pendingAction) {
+                        pendingAction(currentApiKey);
+                    }
+                    hideApiKeyModal();
+                } else {
+                    alert('Please enter an API key');
+                }
+            });
+            
+            cancelApiKey.addEventListener('click', hideApiKeyModal);
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    hideApiKeyModal();
+                }
+            });
             
             // Tab switching
             const entryTab = document.getElementById('entry-tab');
@@ -215,7 +297,7 @@
             
             // Form submission
             const workForm = document.getElementById('work-form');
-            workForm.addEventListener('submit', async function(e) {
+            workForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
                 // Get form values
@@ -236,32 +318,36 @@
                     description
                 };
                 
-                try {
-                    // Send POST request to server
-                    const response = await fetch(API_BASE_URL, {
+                // Define the action to perform after getting API key
+                const submitWorkEntry = (apiKey) => {
+                    fetch(API_BASE_URL, {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            'x-api-key': apiKey
                         },
                         body: JSON.stringify(workEntry)
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(() => {
+                        // Reset form
+                        workForm.reset();
+                        alert('වැඩ විස්තර සාර්ථකව සුරකින ලදී!');
+                        historyTab.click();
+                    })
+                    .catch(error => {
+                        console.error('Error saving work entry:', error);
+                        alert('දෝෂයක් ඇතිවිය: ' + error.message);
                     });
-                    
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    
-                    // Reset form
-                    workForm.reset();
-                    
-                    // Show success message
-                    alert('වැඩ විස්තර සාර්ථකව සුරකින ලදී!');
-                    
-                    // Switch to history tab
-                    historyTab.click();
-                } catch (error) {
-                    console.error('Error saving work entry:', error);
-                    alert('දෝෂයක් ඇතිවිය: ' + error.message);
-                }
+                };
+                
+                // Show API key modal
+                showApiKeyModal(submitWorkEntry);
             });
             
             // Load history function
@@ -412,24 +498,30 @@
                         historyList.appendChild(historyItem);
                         
                         // Add event listener for delete button
-                        historyItem.querySelector('.delete-btn').addEventListener('click', async function(e) {
+                        historyItem.querySelector('.delete-btn').addEventListener('click', function(e) {
                             e.stopPropagation();
                             if (confirm('ඔබට මෙම ඇතුළත් කිරීම මකා දැමීමට අවශ්‍යද?')) {
-                                try {
-                                    const response = await fetch(`${API_BASE_URL}/${entry.id}`, {
-                                        method: 'DELETE'
+                                const deleteEntry = (apiKey) => {
+                                    fetch(`${API_BASE_URL}/${entry.id}`, {
+                                        method: 'DELETE',
+                                        headers: {
+                                            'x-api-key': apiKey
+                                        }
+                                    })
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error('Network response was not ok');
+                                        }
+                                        loadHistory();
+                                        alert('ඇතුළත් කිරීම සාර්ථකව මකා දමන ලදී!');
+                                    })
+                                    .catch(error => {
+                                        console.error('Error deleting entry:', error);
+                                        alert('දෝෂයක් ඇතිවිය: ' + error.message);
                                     });
-                                    
-                                    if (!response.ok) {
-                                        throw new Error('Network response was not ok');
-                                    }
-                                    
-                                    loadHistory(); // Reload the history
-                                    alert('ඇතුළත් කිරීම සාර්ථකව මකා දමන ලදී!');
-                                } catch (error) {
-                                    console.error('Error deleting entry:', error);
-                                    alert('දෝෂයක් ඇතිවිය: ' + error.message);
-                                }
+                                };
+                                
+                                showApiKeyModal(deleteEntry);
                             }
                         });
                         
@@ -453,7 +545,7 @@
                         // Add event listener for edit form submission
                         const editForm = historyItem.querySelector('.edit-work-form');
                         if (editForm) {
-                            editForm.addEventListener('submit', async function(e) {
+                            editForm.addEventListener('submit', function(e) {
                                 e.preventDefault();
                                 e.stopPropagation();
                                 
@@ -466,30 +558,32 @@
                                     description: this.querySelector('.edit-description').value
                                 };
                                 
-                                try {
-                                    const response = await fetch(`${API_BASE_URL}/${entry.id}`, {
+                                const updateEntry = (apiKey) => {
+                                    fetch(`${API_BASE_URL}/${entry.id}`, {
                                         method: 'PUT',
                                         headers: {
-                                            'Content-Type': 'application/json'
+                                            'Content-Type': 'application/json',
+                                            'x-api-key': apiKey
                                         },
                                         body: JSON.stringify(updatedEntry)
+                                    })
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error('Network response was not ok');
+                                        }
+                                        // Hide the edit form
+                                        this.closest('.edit-form').style.display = 'none';
+                                        // Reload the history to show updated data
+                                        loadHistory();
+                                        alert('ඇතුළත් කිරීම සාර්ථකව යාවත්කාලීන කරන ලදී!');
+                                    })
+                                    .catch(error => {
+                                        console.error('Error updating entry:', error);
+                                        alert('දෝෂයක් ඇතිවිය: ' + error.message);
                                     });
-                                    
-                                    if (!response.ok) {
-                                        throw new Error('Network response was not ok');
-                                    }
-                                    
-                                    // Hide the edit form
-                                    this.closest('.edit-form').style.display = 'none';
-                                    
-                                    // Reload the history to show updated data
-                                    loadHistory();
-                                    
-                                    alert('ඇතුළත් කිරීම සාර්ථකව යාවත්කාලීන කරන ලදී!');
-                                } catch (error) {
-                                    console.error('Error updating entry:', error);
-                                    alert('දෝෂයක් ඇතිවිය: ' + error.message);
-                                }
+                                };
+                                
+                                showApiKeyModal(updateEntry);
                             });
                         }
                     });
@@ -500,30 +594,40 @@
             }
             
             // Clear history functionality
-            document.getElementById('clear-history').addEventListener('click', async function() {
+            document.getElementById('clear-history').addEventListener('click', function() {
                 if (confirm('ඔබට සියලු ඉතිහාසය මැකිය යුතුද?')) {
-                    try {
-                        // First get all items to delete them one by one
-                        const response = await fetch(API_BASE_URL);
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        const history = await response.json();
-                        
-                        // Delete all items
-                        for (const item of history) {
-                            await fetch(`${API_BASE_URL}/${item.id}`, {
-                                method: 'DELETE'
+                    const clearAllEntries = (apiKey) => {
+                        fetch(API_BASE_URL)
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.json();
+                            })
+                            .then(history => {
+                                // Delete all items one by one
+                                const deletePromises = history.map(item => 
+                                    fetch(`${API_BASE_URL}/${item.id}`, {
+                                        method: 'DELETE',
+                                        headers: {
+                                            'x-api-key': apiKey
+                                        }
+                                    })
+                                );
+                                
+                                return Promise.all(deletePromises);
+                            })
+                            .then(() => {
+                                loadHistory();
+                                alert('සියලු ඉතිහාසය මැකී ඇත!');
+                            })
+                            .catch(error => {
+                                console.error('Error clearing history:', error);
+                                alert('දෝෂයක් ඇතිවිය: ' + error.message);
                             });
-                        }
-                        
-                        // Reload the history to reflect changes
-                        loadHistory();
-                        alert('සියලු ඉතිහාසය මැකී ඇත!');
-                    } catch (error) {
-                        console.error('Error clearing history:', error);
-                        alert('දෝෂයක් ඇතිවිය: ' + error.message);
-                    }
+                    };
+                    
+                    showApiKeyModal(clearAllEntries);
                 }
             });
             
@@ -721,24 +825,30 @@
                     historyList.appendChild(historyItem);
                     
                     // Add event listeners for the newly created elements
-                    historyItem.querySelector('.delete-btn').addEventListener('click', async function(e) {
+                    historyItem.querySelector('.delete-btn').addEventListener('click', function(e) {
                         e.stopPropagation();
                         if (confirm('ඔබට මෙම ඇතුළත් කිරීම මකා දැමීමට අවශ්‍යද?')) {
-                            try {
-                                const response = await fetch(`${API_BASE_URL}/${entry.id}`, {
-                                    method: 'DELETE'
+                            const deleteEntry = (apiKey) => {
+                                fetch(`${API_BASE_URL}/${entry.id}`, {
+                                    method: 'DELETE',
+                                    headers: {
+                                        'x-api-key': apiKey
+                                    }
+                                })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    loadHistory();
+                                    alert('ඇතුළත් කිරීම සාර්ථකව මකා දමන ලදී!');
+                                })
+                                .catch(error => {
+                                    console.error('Error deleting entry:', error);
+                                    alert('දෝෂයක් ඇතිවිය: ' + error.message);
                                 });
-                                
-                                if (!response.ok) {
-                                    throw new Error('Network response was not ok');
-                                }
-                                
-                                loadHistory(); // Reload the history
-                                alert('ඇතුළත් කිරීම සාර්ථකව මකා දමන ලදී!');
-                            } catch (error) {
-                                console.error('Error deleting entry:', error);
-                                alert('දෝෂයක් ඇතිවිය: ' + error.message);
-                            }
+                            };
+                            
+                            showApiKeyModal(deleteEntry);
                         }
                     });
                     
@@ -759,7 +869,7 @@
                     
                     const editForm = historyItem.querySelector('.edit-work-form');
                     if (editForm) {
-                        editForm.addEventListener('submit', async function(e) {
+                        editForm.addEventListener('submit', function(e) {
                             e.preventDefault();
                             e.stopPropagation();
                             
@@ -772,30 +882,32 @@
                                 description: this.querySelector('.edit-description').value
                             };
                             
-                            try {
-                                const response = await fetch(`${API_BASE_URL}/${entry.id}`, {
+                            const updateEntry = (apiKey) => {
+                                fetch(`${API_BASE_URL}/${entry.id}`, {
                                     method: 'PUT',
                                     headers: {
-                                        'Content-Type': 'application/json'
+                                        'Content-Type': 'application/json',
+                                        'x-api-key': apiKey
                                     },
                                     body: JSON.stringify(updatedEntry)
+                                })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    // Hide the edit form
+                                    this.closest('.edit-form').style.display = 'none';
+                                    // Reload the history to show updated data
+                                    loadHistory();
+                                    alert('ඇතුළත් කිරීම සාර්ථකව යාවත්කාලීන කරන ලදී!');
+                                })
+                                .catch(error => {
+                                    console.error('Error updating entry:', error);
+                                    alert('දෝෂයක් ඇතිවිය: ' + error.message);
                                 });
-                                
-                                if (!response.ok) {
-                                    throw new Error('Network response was not ok');
-                                }
-                                
-                                // Hide the edit form
-                                this.closest('.edit-form').style.display = 'none';
-                                
-                                // Reload the history to show updated data
-                                loadHistory();
-                                
-                                alert('ඇතුළත් කිරීම සාර්ථකව යාවත්කාලීන කරන ලදී!');
-                            } catch (error) {
-                                console.error('Error updating entry:', error);
-                                alert('දෝෂයක් ඇතිවිය: ' + error.message);
-                            }
+                            };
+                            
+                            showApiKeyModal(updateEntry);
                         });
                     }
                 });

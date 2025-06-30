@@ -4,12 +4,23 @@ const path = require('path');
 const bodyParser = require('body-parser');
 
 const app = express();
-const PORT = process.env.PORT || 3355;
+const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, 'data', 'data.json');
+const API_KEY = process.env.API_KEY || 'rZBm5767LxkI5865'; // Change this to a strong password
 
 // Middleware
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
+
+// API Key Middleware for write operations
+const apiKeyAuth = (req, res, next) => {
+    const providedKey = req.query.apiKey || req.headers['x-api-key'];
+    
+    if (!providedKey || providedKey !== API_KEY) {
+        return res.status(401).json({ error: 'Unauthorized: Invalid API key' });
+    }
+    next();
+};
 
 // Ensure data directory and file exist
 if (!fs.existsSync(path.dirname(DATA_FILE))) {
@@ -39,13 +50,13 @@ function writeData(data) {
     }
 }
 
-// GET all items
+// GET all items (public)
 app.get('/api/data', (req, res) => {
     const data = readData();
     res.json(data);
 });
 
-// GET single item by ID
+// GET single item by ID (public)
 app.get('/api/data/:id', (req, res) => {
     const data = readData();
     const item = data.find(item => item.id === req.params.id);
@@ -56,8 +67,8 @@ app.get('/api/data/:id', (req, res) => {
     }
 });
 
-// POST new item
-app.post('/api/data', (req, res) => {
+// POST new item (protected)
+app.post('/api/data', apiKeyAuth, (req, res) => {
     if (!req.body || Object.keys(req.body).length === 0) {
         return res.status(400).json({ error: 'Request body is empty' });
     }
@@ -72,8 +83,8 @@ app.post('/api/data', (req, res) => {
     res.status(201).json(newItem);
 });
 
-// PUT update existing item
-app.put('/api/data/:id', (req, res) => {
+// PUT update existing item (protected)
+app.put('/api/data/:id', apiKeyAuth, (req, res) => {
     if (!req.body || Object.keys(req.body).length === 0) {
         return res.status(400).json({ error: 'Request body is empty' });
     }
@@ -96,8 +107,8 @@ app.put('/api/data/:id', (req, res) => {
     res.json(updatedItem);
 });
 
-// DELETE item
-app.delete('/api/data/:id', (req, res) => {
+// DELETE item (protected)
+app.delete('/api/data/:id', apiKeyAuth, (req, res) => {
     const data = readData();
     const initialLength = data.length;
     const filteredData = data.filter(item => item.id !== req.params.id);
@@ -113,4 +124,5 @@ app.delete('/api/data/:id', (req, res) => {
 // Start server
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`API Key: ${API_KEY}`);
 });
