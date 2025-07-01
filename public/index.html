@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>වැඩ ලේඛන පද්ධතිය</title>
+    <title>Work Sheat | Dev Theekshana ❤️‍🔥</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -90,8 +90,8 @@
     <div id="apiKeyModal" class="modal">
         <div class="modal-content">
             <div class="mb-4">
-                <h3 class="text-lg font-medium text-gray-800 mb-2">API Key Required</h3>
-                <p class="text-gray-600">Please enter your API key to perform this action</p>
+                <h3 class="text-lg font-medium text-gray-800 mb-2">Pass Key Required</h3>
+                <p class="text-gray-600">Please enter your Pass key to perform this action</p>
             </div>
             <div class="mb-4">
                 <input type="password" id="apiKeyInput" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500" placeholder="Enter API Key">
@@ -105,26 +105,26 @@
 
     <div class="container mx-auto px-4 py-8">
         <header class="text-center mb-12">
-            <h1 class="text-3xl md:text-4xl font-bold text-blue-800 mb-2">වැඩ ලේඛන පද්ධතිය</h1>
-            <p class="text-lg text-gray-600">ඔබගේ දෛනික වැඩ සටහන් ගබඩා කර සුරකින්න</p>
+            <h1 class="text-3xl md:text-4xl font-bold text-blue-800 mb-2">Dev Theekshana Work Sheat System ❗</h1>
+            <p class="text-lg text-gray-600">Daliy Work Sheat ✅</p>
         </header>
 
         <div class="flex justify-center mb-8">
-            <button id="entry-tab" class="tab-button active text-lg font-medium px-6 py-2 rounded-t-lg">නව ඇතුළත් කිරීම</button>
-            <button id="history-tab" class="tab-button text-lg font-medium px-6 py-2 rounded-t-lg">ඉතිහාසය</button>
+            <button id="entry-tab" class="tab-button active text-lg font-medium px-6 py-2 rounded-t-lg">New Enter Work Time 👤❗</button>
+            <button id="history-tab" class="tab-button text-lg font-medium px-6 py-2 rounded-t-lg">Work History 👤❗</button>
         </div>
 
         <!-- Entry Form Section -->
         <div id="entry-section" class="smooth-transition">
             <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-md overflow-hidden card">
                 <div class="p-6">
-                    <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">වැඩ විස්තර ඇතුළත් කරන්න</h2>
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Enter work details 👤❗</h2>
                     
                     <form id="work-form" class="space-y-4">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <!-- Date -->
                             <div>
-                                <label for="date" class="block text-sm font-medium text-gray-700 mb-1">දිනය</label>
+                                <label for="date" class="block text-sm font-medium text-gray-700 mb-1">Date 📆</label>
                                 <div class="relative">
                                     <input type="date" id="date" name="date" required
                                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
@@ -133,29 +133,29 @@
                             
                             <!-- Work Location -->
                             <div>
-                                <label for="location" class="block text-sm font-medium text-gray-700 mb-1">වැඩ කරපු ස්ථානය</label>
+                                <label for="location" class="block text-sm font-medium text-gray-700 mb-1">Work place 🔖</label>
                                 <input type="text" id="location" name="location" required
                                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                                    placeholder="ස්ථානය 👤💬">
+                                    placeholder="Work Place 👤💬">
                             </div>
                             
                             <!-- Start Time -->
                             <div>
-                                <label for="start-time" class="block text-sm font-medium text-gray-700 mb-1">වැඩ පටන් ගත්ත වෙලාව</label>
+                                <label for="start-time" class="block text-sm font-medium text-gray-700 mb-1">Work Start Time 🕢</label>
                                 <input type="time" id="start-time" name="start-time" required
                                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
                             </div>
                             
                             <!-- End Time -->
                             <div>
-                                <label for="end-time" class="block text-sm font-medium text-gray-700 mb-1">වැඩ අවසන් වූ වෙලාව</label>
+                                <label for="end-time" class="block text-sm font-medium text-gray-700 mb-1">Work Stop Time 🕥</label>
                                 <input type="time" id="end-time" name="end-time" required
                                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
                             </div>
                             
                             <!-- OT Hours -->
                             <div>
-                                <label for="ot-hours" class="block text-sm font-medium text-gray-700 mb-1">OT පැය</label>
+                                <label for="ot-hours" class="block text-sm font-medium text-gray-700 mb-1">O.T.E Hour 🕥</label>
                                 <input type="number" id="ot-hours" name="ot-hours" min="0" step="0.5"
                                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
                                     placeholder="O.T HOUR 👤💬">
@@ -163,10 +163,10 @@
                             
                             <!-- Work Description -->
                             <div class="md:col-span-2">
-                                <label for="description" class="block text-sm font-medium text-gray-700 mb-1">වැඩ විස්තර</label>
+                                <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Special Note 📁</label>
                                 <textarea id="description" name="description" rows="3"
                                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-                                    placeholder="ඔබ කළ වැඩ සහ ඕනෑම විශේෂ සටහන්" required></textarea>
+                                    placeholder="Special Notes 👤✅" required></textarea>
                             </div>
                         </div>
                         
@@ -184,17 +184,17 @@
         <div id="history-section" class="smooth-transition hidden max-w-6xl mx-auto">
             <div class="bg-white rounded-xl shadow-md overflow-hidden card">
                 <div class="p-6">
-                    <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">ඔබගේ වැඩ ඉතිහාසය</h2>
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Work History 🔖</h2>
                     
                     <div class="flex justify-end mb-4">
                         <button id="clear-history" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
-                            සියලු ඉතිහාසය මැකිය යුතුයි
+                            Delete All History
                         </button>
                     </div>
                     
                     <div class="flex justify-between items-center mb-4">
                         <div class="relative w-64">
-                            <input type="text" id="search-history" placeholder="සොයන්න..." 
+                            <input type="text" id="search-history" placeholder="Search ❗..." 
                                 class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
                             <div class="absolute left-3 top-2.5 text-gray-400">
                                 <i class="fas fa-search"></i>
@@ -203,10 +203,10 @@
                         
                         <div class="flex space-x-2">
                             <button id="sort-date" class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 text-sm">
-                                <i class="fas fa-sort-amount-down mr-1"></i> දිනය
+                                <i class="fas fa-sort-amount-down mr-1"></i> Date 📆
                             </button>
                             <button id="sort-location" class="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-100 text-sm">
-                                <i class="fas fa-map-marker-alt mr-1"></i> ස්ථානය
+                                <i class="fas fa-map-marker-alt mr-1"></i> place 🔖
                             </button>
                         </div>
                     </div>
@@ -217,7 +217,7 @@
                     
                     <div id="no-records" class="text-center py-10 hidden">
                         <i class="fas fa-clipboard-list text-5xl text-gray-300 mb-4"></i>
-                        <p class="text-gray-500 text-lg">කිසිදු වාර්තාවක් නැත</p>
+                        <p class="text-gray-500 text-lg">empty records 🔖</p>
                     </div>
                 </div>
             </div>

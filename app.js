@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const DATA_FILE = path.join(__dirname, 'data', 'data.json');
-const API_KEY = process.env.API_KEY || 'rZBm5767LxkI5865'; // Change this to a strong password
+const API_KEY = process.env.API_KEY || 'dev-theekshana'; // Change this to a strong password
 
 // Middleware
 app.use(express.static(path.join(__dirname, 'public')));
